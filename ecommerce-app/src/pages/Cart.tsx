@@ -2,14 +2,15 @@ import { useCartStore } from "../store/useCartStore";
 
 
 const Cart = () => {
-  const { cartItems, removeFromCart } = useCartStore();
+  const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } = useCartStore();
 
-  const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const total = cartItems.reduce((sum, item) => sum + item.price * (item.quantity ?? 1), 0);
   const discount = total * 0.1;
   const finalPrice = total - discount;
 
   return (
     <div className="p-4 md:flex gap-6">
+    {/* LEFT */}
       <div className="md:w-2/3">
         <h2 className="text-2xl font-bold mb-4">Shopping Cart</h2>
 
@@ -29,6 +30,17 @@ const Cart = () => {
               <div className="flex-1">
                 <h3 className="text-lg font-semibold">{item.title}</h3>
                 <p className="text-xl font-bold">₹{item.price.toFixed(2)}</p>
+                {/* QUANTITY CONTROLS */}
+                <div className="flex items-center gap-3 mt-3">
+                    <button
+                        onClick={() => decreaseQuantity(item.id)}
+                        className="px-3 py-1 bg-gray-200 rounded">-</button>
+
+                    <span>{item.quantity ?? 1}</span>
+                    <button
+                        onClick={() => increaseQuantity(item.id)}
+                        className="px-3 py-1 bg-gray-200 rounded">+</button>
+                </div>
               </div>
               <button
                 onClick={() => removeFromCart(item.id)}
@@ -40,22 +52,32 @@ const Cart = () => {
           ))
         )}
       </div>
-
+        {/* RIGHT */}
       <div className="md:w-1/3 bg-gray-100 p-4 rounded-lg shadow-md h-fit">
         <h2 className="txt-xl font-bold mb-4">Order Summary</h2>
 
         <div className="flex justify-between mb-2">
-          <span>Price ({cartItems.length} items):</span>
+          <span>Total Items</span>
+          <span>
+            {cartItems.reduce((acc, item) => acc + (item.quantity ?? 1), 0)}
+          </span>
+        </div>
+
+        <div className="flex justify-between mb-2">
+          <span>Total Price:</span>
           <span>₹{total.toFixed(2)}</span>
         </div>
+
         <div className="flex justify-between mb-2 text-green-600">
           <span>Discount (10%):</span>
           <span>₹{discount.toFixed(2)}</span>
         </div>
+
         <div className="flex justify-between mb-2">
           <span>Delivery Charges</span>
           <span className="text-green-600">FREE</span>
         </div>
+
         <hr className="my-3" />
 
         <div className="flex justify-between font-bold text-lg">
